@@ -49,7 +49,7 @@ public class Graph {
 		return number/2;
 	}
 	
-	public boolean containsEdges(String vname1 , String vname2) {
+	public boolean containsEdge(String vname1 , String vname2) {
 		Vertex vtx1 = vertices.get(vname1);
 		Vertex vtx2 = vertices.get(vname2);
 		
@@ -88,30 +88,34 @@ public class Graph {
 			System.out.println(key+" : "+vtx.neighbour);
 		}
 	}
-	
-	public boolean hasPath(String vname1 , String vname2) {
-		return hasPath(vname1 , vname2 , vname1 , vname1);
-	}
-	public boolean hasPath(String vname1 , String vname2 , String jaha_se_aayi , String actual){
+
+	public boolean hasPath(String vname1 , String vname2 , HashMap<String , Boolean> processed){
 		
-		Vertex vtx1 = new Vertex();
-		vtx1 = vertices.get(vname1);
-		Vertex vtx2 = new Vertex();
-		vtx2 = vertices.get(vname2);
 		
+		// processed map is used to check that neighbour of vname1 is already checked or not
+		processed.put(vname1 , true);
+		
+		
+		// check if vertex exist or not
+		Vertex vtx1 = vertices.get(vname1);
+		Vertex vtx2 = vertices.get(vname2);
 		if(vtx1==null || vtx2==null) return false;
 		
-		if(vtx1.neighbour.containsKey(vname2)) return true;
+		
+		// check if there is direct edge or not
+		if(containsEdge(vname1 , vname2)) return true;
 	
-		ArrayList<String> keys = new ArrayList<>(vtx1.neighbour.keySet());
-
-		boolean result = false;
-		for(String key:keys){
-			if(key!=jaha_se_aayi && key!=actual)
-				result = hasPath(key , vname2 , vname1 , actual);
+		
+		// go to your neighbour and check their is edge or not 
+		ArrayList<String> neighbours = new ArrayList<>(vtx1.neighbour.keySet());
+		
+		for(String neighbour : neighbours)
+		{
+			if( !processed.containsKey(neighbour) && hasPath(neighbour , vname2 , processed) ) 
+				return true;
 		}
 		
-		return result;	
+		return false;	
 	}
 
 	
